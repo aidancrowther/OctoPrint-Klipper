@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import subprocess
 import time
@@ -21,7 +21,7 @@ OCTOPRINT = ["/opt/octoprint/venv/bin/octoprint", "serve"]
 def main():
     mjpg_processes = []
     mjpg_ports = [5000] # Reserve the OctoPrint port
-    for k, v in os.environ.iteritems():
+    for k, v in os.environ.items():
         if k.startswith("MJPG") and not k.startswith("MJPG_"):
             v = v.strip()
             port_env = "MJPG_PORT" + k[4:]
@@ -45,6 +45,9 @@ def main():
     )  # Drop privileges, https://stackoverflow.com/questions/2699907/dropping-root-permissions-in-python#2699996
     os.setuid(1000)
     os.environ['HOME'] = '/home/octoprint'
+    os.environ['LC_ALL'] = 'en_US.utf-8'
+    os.environ['LANG'] = 'en_US.utf-8'
+
     # subprocess.Popen('env', shell=True).wait()
     while 1:
         Poctoprint = subprocess.Popen(OCTOPRINT)

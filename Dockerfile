@@ -10,6 +10,8 @@ RUN apt-get update && apt-get install -y \
     unzip \
     psmisc \
     git \
+    python3.7 \
+    python3-dev \
     python-virtualenv \
     virtualenv \
     python-dev \
@@ -18,6 +20,14 @@ RUN apt-get update && apt-get install -y \
     tzdata \
     zlib1g-dev \
     libjpeg-dev
+
+RUN cd /tmp/ && \
+    wget https://github.com/jacksonliam/mjpg-streamer/archive/master.zip && \
+    unzip master
+
+RUN cd /tmp/mjpg-streamer-master/mjpg-streamer-experimental/ && \
+    make && \
+    make install
 
 EXPOSE 5000
 
@@ -34,27 +44,16 @@ USER octoprint
 RUN mkdir /home/octoprint/.octoprint
 
 #Install Octoprint
-RUN git clone --branch $tag https://github.com/foosel/OctoPrint.git /opt/octoprint \
-  && virtualenv venv \
-  && ./venv/bin/pip install .
+RUN git clone --branch $tag https://github.com/OctoPrint/OctoPrint.git /opt/octoprint \
+  && virtualenv --python=python3 venv \
+  && ./venv/bin/pip install OctoPrint
 
 RUN /opt/octoprint/venv/bin/python -m pip install \
-https://github.com/AlexVerrico/Octoprint-Display-ETA/archive/master.zip \
-https://github.com/1r0b1n0/OctoPrint-Tempsgraph/archive/master.zip \
-https://github.com/tpmullan/OctoPrint-DetailedProgress/archive/master.zip \
-https://github.com/AliceGrey/OctoprintKlipperPlugin/archive/master.zip \
-https://github.com/jneilliii/OctoPrint-TabOrder/archive/master.zip \
-https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/archive/master.zip \
-https://github.com/OctoPrint/OctoPrint-MQTT/archive/master.zip \
-https://github.com/birkbjo/OctoPrint-Themeify/archive/master.zip \
-https://github.com/jneilliii/OctoPrint-Python3PluginCompatibilityCheck/archive/master.zip \
-https://github.com/OllisGit/OctoPrint-PrintJobHistory/releases/latest/download/master.zip \
-https://github.com/marian42/octoprint-preheat/archive/master.zip \
-https://github.com/OllisGit/OctoPrint-FilamentManager/releases/latest/download/master.zip \
-https://github.com/OllisGit/OctoPrint-DisplayLayerProgress/releases/latest/download/master.zip \
-https://github.com/jneilliii/OctoPrint-UltimakerFormatPackage/archive/master.zip \
-https://github.com/jneilliii/OctoPrint-ConsolidateTempControl/archive/master.zip \
-https://github.com/LazeMSS/OctoPrint-UICustomizer/archive/main.zip
+    https://github.com/eyal0/OctoPrint-PrintTimeGenius/archive/master.zip \
+    https://github.com/imrahil/OctoPrint-NavbarTemp/archive/master.zip \
+    https://github.com/bradcfisher/OctoPrint-ExcludeRegionPlugin/archive/master.zip \
+    https://github.com/thelastWallE/OctoprintKlipperPlugin/archive/master.zip \
+    https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/archive/master.zip
 
 VOLUME /home/octoprint/.octoprint
 
@@ -75,16 +74,30 @@ USER octoprint
 
 WORKDIR /home/octoprint
 
-RUN git clone https://github.com/KevinOConnor/klipper
+RUN git clone https://github.com/Klipper3d/klipper
 
 RUN ./klipper/scripts/install-ubuntu-18.04.sh
 
 USER root
+
+#RUN echo "export LC_ALL=C.UTF-8" >> ~/.bashrc
+#RUN echo "export LANG=C.UTF-8" >> ~/.bashrc
 
 # Clean up hack for install script
 RUN rm -f /bin/systemctl
 
 COPY start.py /
 COPY runklipper.py /
+
+#ENV LC_ALL=C.utf-8
+#ENV LANG=C.utf-8
+
+RUN apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y locales \
+    && sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen \
+    && dpkg-reconfigure --frontend=noninteractive locales \
+    && update-locale LANG=en_US.UTF-8
+ENV LANG en_US.UTF-8 
+ENV LC_ALL en_US.UTF-
 
 CMD ["/start.py"]
