@@ -10,16 +10,16 @@ RUN apt-get update && apt-get install -y \
     unzip \
     psmisc \
     git \
-    python3.7 \
+    python3 \
+    python \
     python3-dev \
     python-virtualenv \
     virtualenv \
-    python-dev \
-    libffi-dev \
     build-essential \
     tzdata \
     zlib1g-dev \
-    libjpeg-dev
+    libjpeg-dev \
+    libffi-dev
 
 RUN cd /tmp/ && \
     wget https://github.com/jacksonliam/mjpg-streamer/archive/master.zip && \
@@ -53,7 +53,8 @@ RUN /opt/octoprint/venv/bin/python -m pip install \
     https://github.com/imrahil/OctoPrint-NavbarTemp/archive/master.zip \
     https://github.com/bradcfisher/OctoPrint-ExcludeRegionPlugin/archive/master.zip \
     https://github.com/thelastWallE/OctoprintKlipperPlugin/archive/master.zip \
-    https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/archive/master.zip
+    https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/archive/master.zip \
+    https://github.com/TheSpaghettiDetective/OctoPrint-TheSpaghettiDetective/archive/master.zip
 
 VOLUME /home/octoprint/.octoprint
 
@@ -98,6 +99,9 @@ RUN apt-get update \
     && dpkg-reconfigure --frontend=noninteractive locales \
     && update-locale LANG=en_US.UTF-8
 ENV LANG en_US.UTF-8 
-ENV LC_ALL en_US.UTF-
+ENV LC_ALL en_US.UTF-8
+
+#RUN rmmod uvcvideo \
+#    && modprobe uvcvideo quirks=640
 
 CMD ["/start.py"]

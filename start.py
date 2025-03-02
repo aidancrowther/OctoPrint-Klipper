@@ -17,8 +17,18 @@ MJPG_INPUT_DEFAULT = "input_uvc.so -r HD"
 
 OCTOPRINT = ["/opt/octoprint/venv/bin/octoprint", "serve"]
 
+#CLEARUVCVIDEO = ["rmmod uvcvideo"]
+#RELOADUVCVIDEO = ["modprobe uvcvideo quirks=640"]
 
 def main():
+
+    #clearuvcvideo_process = subprocess.Popen(CLEARUVCVIDEO)
+    #clearuvcvideo_process.wait()
+    #time.sleep(1)
+    #reloaduvcvideo_process = subprocess.Popen(RELOADUVCVIDEO)
+    #reloaduvcvideo_process.wait()
+    #time.sleep(1)
+
     mjpg_processes = []
     mjpg_ports = [5000] # Reserve the OctoPrint port
     for k, v in os.environ.items():
